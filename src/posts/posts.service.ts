@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Post, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 
@@ -30,6 +30,7 @@ export class PostsService {
     data: Prisma.PostUpdateInput;
   }): Promise<Post> {
     const { where, data } = params;
+
     return this.prisma.post.update({
       data,
       where,

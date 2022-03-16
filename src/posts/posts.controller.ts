@@ -6,24 +6,30 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
+  Request,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Post as PostModel, Prisma } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(
+    @Request() req,
     @Body() postData: { title: string; content: string; authorId: string },
   ): Promise<PostModel> {
-    const { title, content, authorId } = postData;
+    const { title, content } = postData;
     return this.postsService.create({
       title,
       content,
       author: {
-        connect: { id: authorId },
+        connect: { id: req.user.userId },
       },
     });
   }
@@ -40,27 +46,52 @@ export class PostsController {
     return this.postsService.findOne({ id: Number(id) });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
+    @Request() req,
     @Param('id') id: string,
     @Body() postData: Prisma.PostUpdateInput,
   ): Promise<PostModel> {
+    const existingPost = await this.postsService.findOne({ id: Number(id) });
+
+    if (existingPost.authorId !== req.user.userId) {
+      throw new UnauthorizedException();
+    }
+
     return this.postsService.update({
       where: { id: Number(id) },
       data: postData,
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('publish/:id')
-  async publishPost(@Param('id') id: string): Promise<PostModel> {
+  async publishPost(
+    @Request() req,
+    @Param('id') id: string,
+  ): Promise<PostModel> {
+    const existingPost = await this.postsService.findOne({ id: Number(id) });
+
+    if (existingPost.authorId !== req.user.userId) {
+      throw new UnauthorizedException();
+    }
+
     return this.postsService.update({
       where: { id: Number(id) },
       data: { published: true },
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<PostModel> {
+  async remove(@Request() req, @Param('id') id: string): Promise<PostModel> {
+    const existingPost = await this.postsService.findOne({ id: Number(id) });
+
+    if (existingPost.authorId !== req.user.userId) {
+      throw new UnauthorizedException();
+    }
+
     return this.postsService.remove({ id: Number(id) });
   }
 }

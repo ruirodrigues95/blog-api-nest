@@ -29,7 +29,7 @@ export class PostsController {
       title,
       content,
       author: {
-        connect: { id: req.user.userId },
+        connect: { email: req.user.email },
       },
     });
   }
@@ -38,6 +38,17 @@ export class PostsController {
   async getPublishedPosts(): Promise<PostModel[]> {
     return this.postsService.findAll({
       where: { published: true },
+      include: {
+        author: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        comments: true,
+      },
     });
   }
 

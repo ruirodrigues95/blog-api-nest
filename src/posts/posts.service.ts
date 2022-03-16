@@ -12,9 +12,12 @@ export class PostsService {
     });
   }
 
-  async findAll(params: { where?: Prisma.PostWhereInput }): Promise<Post[]> {
-    const { where } = params;
-    return this.prisma.post.findMany({ where });
+  async findAll(params: {
+    where?: Prisma.PostWhereInput;
+    include?: Prisma.PostInclude;
+  }): Promise<Post[]> {
+    const { where, include } = params;
+    return this.prisma.post.findMany({ where, include });
   }
 
   async findOne(

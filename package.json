@@ -7,9 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "rm -rf client && cd ../blog && npm run build && mv ./dist ../blog-api/client && cd ../blog-api/ && nest build",
-    "deploy": "git add . && git commit -m 'new deploy' && git push",
-    "build-deploy": "npm run build && npm run deploy",
+    "build": "nest build",
+    "deploy": "rm -rf ./client && cd ../blog && npm run build && mv ./dist ../blog-api/client && cd ../blog-api && git add . && git commit -m 'new deploy' && git push",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

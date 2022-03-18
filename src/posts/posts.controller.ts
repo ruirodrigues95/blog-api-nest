@@ -22,7 +22,7 @@ export class PostsController {
   @Post()
   async create(
     @Request() req,
-    @Body() postData: { title: string; content: string; authorId: string },
+    @Body() postData: { title: string; content: string },
   ): Promise<PostModel> {
     const { title, content } = postData;
     return this.postsService.create({
@@ -47,7 +47,11 @@ export class PostsController {
             avatar: true,
           },
         },
-        comments: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
     });
   }

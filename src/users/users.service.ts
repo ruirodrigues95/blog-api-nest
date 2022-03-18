@@ -36,4 +36,15 @@ export class UsersService {
   async remove(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({ where });
   }
+
+  async saveOrUpdateRefreshToken(refreshToken: string, id: string) {
+    await this.prisma.user.update({
+      data: {
+        refreshToken,
+      },
+      where: {
+        id,
+      },
+    });
+  }
 }

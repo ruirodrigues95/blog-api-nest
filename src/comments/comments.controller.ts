@@ -1,20 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
-@Controller('comments')
+@Controller('posts/:postId/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  async create(
+    @Param('postId') postId: string,
+    @Request() req,
+    @Body() commentData: { content: string },
+  ) {
+    return this.commentsService.create({
+      content: commentData.content,
+      author: {
+        connect: { email: req.user.email },
+      },
+      post: {
+        connect: { id: Number(postId) },
+      },
+    });
   }
 
   @Get()
-  findAll() {
-    return this.commentsService.findAll();
+  async findAll(@Param('postId') postId: string) {
+    return this.commentsService.findCommentsByPostId(+postId);
   }
 
   @Get(':id')

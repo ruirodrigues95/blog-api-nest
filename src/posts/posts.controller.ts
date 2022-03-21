@@ -58,7 +58,26 @@ export class PostsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<PostModel> {
-    return this.postsService.findOne({ id: Number(id) });
+    return this.postsService.findOne({
+      where: {
+        id: +id,
+      },
+      include: {
+        author: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            avatar: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+    });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,7 +87,9 @@ export class PostsController {
     @Param('id') id: string,
     @Body() postData: Prisma.PostUpdateInput,
   ): Promise<PostModel> {
-    const existingPost = await this.postsService.findOne({ id: Number(id) });
+    const existingPost = await this.postsService.findOne({
+      where: { id: +id },
+    });
 
     if (existingPost.authorId !== req.user.userId) {
       throw new UnauthorizedException();
@@ -86,7 +107,9 @@ export class PostsController {
     @Request() req,
     @Param('id') id: string,
   ): Promise<PostModel> {
-    const existingPost = await this.postsService.findOne({ id: Number(id) });
+    const existingPost = await this.postsService.findOne({
+      where: { id: +id },
+    });
 
     if (existingPost.authorId !== req.user.userId) {
       throw new UnauthorizedException();
@@ -101,7 +124,12 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string): Promise<PostModel> {
-    const existingPost = await this.postsService.findOne({ id: Number(id) });
+    const existingPost = await this.postsService.findOne({
+      where: { id: +id },
+    });
+
+    console.log('existing post author ID', existingPost.authorId);
+    console.log('req user ID', req.user.userId);
 
     if (existingPost.authorId !== req.user.userId) {
       throw new UnauthorizedException();

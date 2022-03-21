@@ -20,11 +20,14 @@ export class PostsService {
     return this.prisma.post.findMany({ where, include });
   }
 
-  async findOne(
-    postWhereUniqueInput: Prisma.PostWhereUniqueInput,
-  ): Promise<Post | null> {
+  async findOne(params: {
+    where: Prisma.PostWhereUniqueInput;
+    include?: Prisma.PostInclude;
+  }): Promise<Post | null> {
+    const { where, include } = params;
     return this.prisma.post.findUnique({
-      where: postWhereUniqueInput,
+      where,
+      include,
     });
   }
 

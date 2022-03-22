@@ -128,9 +128,6 @@ export class PostsController {
       where: { id: +id },
     });
 
-    console.log('existing post author ID', existingPost.authorId);
-    console.log('req user ID', req.user.userId);
-
     if (existingPost.authorId !== req.user.userId) {
       throw new UnauthorizedException();
     }

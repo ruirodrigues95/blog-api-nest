@@ -32,6 +32,6 @@ export class JwtRefreshStrategy extends PassportStrategy(
     //   throw new UnauthorizedException();
     // }
 
-    return { userId: user.id, email: payload.email };
+    return { sub: user.id, email: payload.email };
   }
 }

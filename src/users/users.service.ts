@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Post, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -35,6 +35,14 @@ export class UsersService {
 
   async remove(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({ where });
+  }
+
+  async findPostsByUserId(userId: string): Promise<Post[]> {
+    return this.prisma.post.findMany({
+      where: {
+        authorId: userId,
+      },
+    });
   }
 
   async saveOrUpdateRefreshToken(refreshToken: string, id: string) {

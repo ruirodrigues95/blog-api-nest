@@ -15,9 +15,26 @@ export class PostsService {
   async findAll(params: {
     where?: Prisma.PostWhereInput;
     include?: Prisma.PostInclude;
-  }): Promise<Post[]> {
-    const { where, include } = params;
-    return this.prisma.post.findMany({ where, include });
+    orderBy?: Prisma.PostOrderByWithAggregationInput;
+    take?: number;
+    cursor?: { id: number };
+    skip?: number;
+  }) {
+    const { where, include, take, cursor, skip, orderBy } = params;
+
+    const posts = await this.prisma.post.findMany({
+      take,
+      cursor,
+      where,
+      orderBy,
+      include,
+      skip,
+    });
+
+    return {
+      posts: posts,
+      nextCursor: posts.length === take ? posts[take - 1].id : undefined,
+    };
   }
 
   async findOne(params: {

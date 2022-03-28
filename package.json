@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "deploy": "rm -rf ./client && cd ../blog && npm run build && mv ./dist ../blog-api/client && cd ../blog-api && git add . && git commit -m 'new deploy' && git push",
+    "deploy": "rm -rf ./client && cd ../blog && npm run build && mv ./dist ../blog-api/client && cd ../blog-api && git add . && git commit --allow-empty -m 'new deploy' && git push",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

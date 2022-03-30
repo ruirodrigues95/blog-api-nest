@@ -14,6 +14,7 @@ model Post {
   id Int @id @default(autoincrement())
   title String
   content String
+  contentDelta String
   published Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

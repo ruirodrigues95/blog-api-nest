@@ -23,13 +23,20 @@ export class PostsController {
   @Post()
   async create(
     @Request() req,
-    @Body() postData: { title: string; content: string; published: boolean },
+    @Body()
+    postData: {
+      title: string;
+      content: string;
+      contentDelta: string;
+      published: boolean;
+    },
   ): Promise<PostModel> {
-    const { title, content, published } = postData;
+    const { title, content, published, contentDelta } = postData;
     return this.postsService.create({
       title,
       content,
       published,
+      contentDelta,
       author: {
         connect: { email: req.user.email },
       },
